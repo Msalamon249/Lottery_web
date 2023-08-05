@@ -1,8 +1,5 @@
 package com.example.lottery_web.domain.numberreciever;
 
-import com.example.lottery_web.domain.numberreciever.dto.NumberRecieverDto;
-
-import com.example.lottery_web.domain.numberreciever.dto.TicketDto;
 import org.junit.jupiter.api.Test;
 
 import java.time.Clock;

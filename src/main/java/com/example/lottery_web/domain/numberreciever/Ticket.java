@@ -1,7 +1,10 @@
 package com.example.lottery_web.domain.numberreciever;
 
+import lombok.Builder;
+
 import java.time.LocalDateTime;
 import java.util.Set;
 
-record Ticket(String id, LocalDateTime drawDate, Set<Integer> userNumbers) {
+@Builder
+record Ticket(String hash, Set<Integer> numbers, LocalDateTime drawDate) {
 }
