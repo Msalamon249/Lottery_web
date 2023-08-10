@@ -1,9 +1,10 @@
 package com.example.lottery_web.domain.resultchecker;
 
 
-import com.example.lottery_web.domain.numbergenerator.NumberGeneratorFacade;
+import com.example.lottery_web.domain.numbergenerator.WinningNumbersGeneratorFacade;
 import com.example.lottery_web.domain.numbergenerator.dto.WinningNumbersDto;
-import com.example.lottery_web.domain.numberreciever.NumberRecieverFacade;
+import com.example.lottery_web.domain.numberreciever.NumberReceiverFacade;
+
 import com.example.lottery_web.domain.numberreciever.dto.TicketDto;
 import com.example.lottery_web.domain.resultchecker.dto.PlayersDto;
 import com.example.lottery_web.domain.resultchecker.dto.ResultDto;
@@ -15,15 +16,15 @@ import java.util.Set;
 @AllArgsConstructor
 public class ResultCheckerFacade {
 
- private final  NumberGeneratorFacade numberGeneratorFacade;
- private final  NumberRecieverFacade numberRecieverFacade;
+ private final WinningNumbersGeneratorFacade winningNumbersGeneratorFacade;
+ private final NumberReceiverFacade numberRecieverFacade;
  private final  PlayerRespotiory playerRespotiory;
  private final  WinnersRetriever winnersRetriever;
 
     public PlayersDto generateWinners(){
         List<TicketDto> allTicketsByDate = numberRecieverFacade.retrieveAllTicketsByNextDrawDate();
         List<Ticket>tickets = ResultCheckerMapper.mapFromTicketDto(allTicketsByDate);
-        WinningNumbersDto winningNumbersDto = numberGeneratorFacade.generateWinningNumbers();
+        WinningNumbersDto winningNumbersDto = winningNumbersGeneratorFacade.generateWinningNumbers();
         Set<Integer> winningNumbers = winningNumbersDto.getWinningNumbers();
         if(winningNumbers == null || winningNumbers.isEmpty()){
             return PlayersDto.builder()

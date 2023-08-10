@@ -24,8 +24,8 @@ public class ResultCheckerMapper {
     static List<Ticket> mapFromTicketDto(List<TicketDto> allTickets) {
         return allTickets.stream()
                 .map(ticketDto -> Ticket.builder()
-                        .hash(ticketDto.ticketId())
-                        .numbers(ticketDto.numbersFromUser())
+                        .hash(ticketDto.hash())
+                        .numbers(ticketDto.numbers())
                         .drawDate(ticketDto.drawDate())
                         .build())
                 .collect(Collectors.toList());

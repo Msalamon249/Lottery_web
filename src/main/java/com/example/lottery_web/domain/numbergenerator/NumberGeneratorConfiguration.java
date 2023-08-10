@@ -1,12 +1,31 @@
 package com.example.lottery_web.domain.numbergenerator;
 
-import com.example.lottery_web.domain.numberreciever.NumberRecieverFacade;
 
+import com.example.lottery_web.domain.numberreciever.NumberReceiverFacade;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
+@Configuration
 public class NumberGeneratorConfiguration {
 
-    NumberGeneratorFacade createForTest(RandomNumberGenerable generator, WinningNumbersRepository winningNumbersRepository, NumberRecieverFacade numberReceiverFacade) {
-        WinningNumberValidator winningNumberValidator = new WinningNumberValidator();
-        return new NumberGeneratorFacade(generator, winningNumberValidator, winningNumbersRepository, numberReceiverFacade);
-    }
+
+
+//    @Bean
+//    WinningNumbersGeneratorFacade winningNumbersGeneratorFacade(WinningNumbersRepository winningNumbersRepository, NumberReceiverFacade numberReceiverFacade, RandomNumberGenerable randomNumberGenerator, WinningNumbersGeneratorFacadeConfigurationProperties properties) {
+//        WinningNumberValidator winningNumberValidator = new WinningNumberValidator();
+//        return new WinningNumbersGeneratorFacade(randomNumberGenerator, winningNumberValidator, winningNumbersRepository, numberReceiverFacade, properties);
+//    }
+
+//    WinningNumbersGeneratorFacade createForTest(RandomNumberGenerable generator, WinningNumbersRepository winningNumbersRepository, NumberReceiverFacade numberReceiverFacade) {
+//
+//        WinningNumbersGeneratorFacadeConfigurationProperties properties = WinningNumbersGeneratorFacadeConfigurationProperties.builder()
+//                .count(6)
+//                .lowerBand(1)
+//                .upperBand(99)
+//                .build();
+//        return winningNumbersGeneratorFacade(winningNumbersRepository,numberReceiverFacade,generator,properties);
+//    }
+
+
+
 }
