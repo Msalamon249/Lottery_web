@@ -10,8 +10,8 @@ public record ResponseDto(
         String hash,
         Set<Integer> numbers,
         Set<Integer> hitNumbers,
+        Set<Integer> wonNumbers,
         LocalDateTime drawDate,
-        boolean isWinner
-
-) {
+        boolean isWinner)
+ {
 }

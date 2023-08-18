@@ -1,4 +1,4 @@
-package com.example.lottery_web.domain.numbergenerator;
+package com.example.lottery_web.domain.numbergenerator.exceptions;
 
 public class WinningNumbersNotFoundException extends RuntimeException{
 

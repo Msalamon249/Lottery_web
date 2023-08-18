@@ -1,3 +1,5 @@
 lotto:
   number-generator:
-    timer: "*/5 * * * * *"
+    lotteryRunOccurrence: "*/5 * * * * *"
+  result-checker:
+    lotteryRunOccurrence: "*/7 * * * * *"

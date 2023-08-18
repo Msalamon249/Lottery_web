@@ -1,4 +1,4 @@
-package pl.lotto;
+package com.example.loterry_web;
 
 import com.example.lottery_web.LotteryWebApplication;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -15,9 +15,11 @@ import org.testcontainers.containers.MongoDBContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
+import com.example.lottery_web.domain.AdjustableClock;
+
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 
-@SpringBootTest(classes = {LotteryWebApplication.class})
+@SpringBootTest(classes = {LotteryWebApplication.class, IntegrationConfiguration.class})
 @ActiveProfiles("integration")
 @AutoConfigureMockMvc
 @Testcontainers
@@ -33,6 +35,9 @@ public class BaseIntegrationTest {
 
     @Autowired
     public ObjectMapper objectMapper;
+
+    @Autowired
+    public AdjustableClock clock;
 
     @RegisterExtension
     public static WireMockExtension wireMockServer = WireMockExtension.newInstance()

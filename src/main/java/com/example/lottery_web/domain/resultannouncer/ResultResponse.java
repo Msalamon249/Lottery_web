@@ -2,16 +2,22 @@ package com.example.lottery_web.domain.resultannouncer;
 
 
 import lombok.Builder;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
 import java.util.Set;
 
 @Builder
+@Document
 public record ResultResponse(
-        String hash,
+        @Id String hash,
         Set<Integer> numbers,
+        Set<Integer> wonNumbers,
         Set<Integer> hitNumbers,
         LocalDateTime drawDate,
-        boolean isWinner
-) {
+        boolean isWinner,
+        @Indexed(expireAfterSeconds = 10)
+        LocalDateTime createdDate) {
 }

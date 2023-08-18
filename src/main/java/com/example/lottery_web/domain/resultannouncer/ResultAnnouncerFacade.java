@@ -5,6 +5,7 @@ import com.example.lottery_web.domain.resultannouncer.dto.ResultAnnouncerRespons
 import com.example.lottery_web.domain.resultchecker.ResultCheckerFacade;
 import com.example.lottery_web.domain.resultchecker.dto.ResultDto;
 import lombok.AllArgsConstructor;
+import org.springframework.cache.annotation.Cacheable;
 
 
 import java.time.Clock;
@@ -19,40 +20,43 @@ import static com.example.lottery_web.domain.resultannouncer.MessageResponse.*;
 @AllArgsConstructor
 public class ResultAnnouncerFacade {
 
-    public static final LocalTime RESULTS_ANNOUNCEMENT_TIME = LocalTime.of(12, 0).plusMinutes(5);
     private final ResultCheckerFacade resultCheckerFacade;
     private final ResponseRepository responseRepository;
     private final Clock clock;
 
+//    @Cacheable(cacheNames = "results")
+
     public ResultAnnouncerResponseDto checkResult(String hash) {
         if (responseRepository.existsById(hash)) {
             Optional<ResultResponse> resultResponseCached = responseRepository.findById(hash);
-            if(resultResponseCached.isPresent()){
+            if (resultResponseCached.isPresent()) {
                 return new ResultAnnouncerResponseDto(ResultMapper.mapToDto(resultResponseCached.get()), ALREADY_CHECKED.info);
             }
         }
-        ResultDto resultDto = resultCheckerFacade.findByHash(hash);
+        ResultDto resultDto = resultCheckerFacade.findByTicketId(hash);
         if (resultDto == null) {
             return new ResultAnnouncerResponseDto(null, HASH_DOES_NOT_EXIST_MESSAGE.info);
         }
         ResponseDto responseDto = buildResponseDto(resultDto);
-        responseRepository.save(buildResponse(responseDto));
+        responseRepository.save(buildResponse(responseDto, LocalDateTime.now(clock)));
         if (responseRepository.existsById(hash) && !isAfterResultAnnouncementTime(resultDto)) {
             return new ResultAnnouncerResponseDto(responseDto, WAIT_MESSAGE.info);
         }
-        if (resultCheckerFacade.findByHash(hash).isWinner()) {
+        if (resultCheckerFacade.findByTicketId(hash).isWinner()) {
             return new ResultAnnouncerResponseDto(responseDto, WIN_MESSAGE.info);
         }
         return new ResultAnnouncerResponseDto(responseDto, LOSE_MESSAGE.info);
     }
 
-    private static ResultResponse buildResponse(ResponseDto responseDto) {
+    private static ResultResponse buildResponse(ResponseDto responseDto, LocalDateTime now) {
         return ResultResponse.builder()
                 .hash(responseDto.hash())
                 .numbers(responseDto.numbers())
                 .hitNumbers(responseDto.hitNumbers())
+                .wonNumbers(responseDto.wonNumbers())
                 .drawDate(responseDto.drawDate())
                 .isWinner(responseDto.isWinner())
+                .createdDate(now)
                 .build();
     }
 
@@ -63,11 +67,12 @@ public class ResultAnnouncerFacade {
                 .hitNumbers(resultDto.hitNumbers())
                 .drawDate(resultDto.drawDate())
                 .isWinner(resultDto.isWinner())
+                .wonNumbers(resultDto.wonNumbers())
                 .build();
     }
 
     private boolean isAfterResultAnnouncementTime(ResultDto resultDto) {
-        LocalDateTime announcementDateTime = LocalDateTime.of(resultDto.drawDate().toLocalDate(), RESULTS_ANNOUNCEMENT_TIME); //
+        LocalDateTime announcementDateTime = resultDto.drawDate();
         return LocalDateTime.now(clock).isAfter(announcementDateTime);
     }
 

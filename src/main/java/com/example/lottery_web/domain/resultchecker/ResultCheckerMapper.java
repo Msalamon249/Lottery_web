@@ -13,21 +13,22 @@ public class ResultCheckerMapper {
                 .map(player -> ResultDto.builder()
                         .hash(player.hash())
                         .numbers(player.numbers())
-                        .isWinner(player.isWinner())
                         .hitNumbers(player.hitNumbers())
                         .drawDate(player.drawDate())
+                        .isWinner(player.isWinner())
+                        .wonNumbers(player.wonNumbers())
                         .build())
                 .collect(Collectors.toList());
     }
 
-
-    static List<Ticket> mapFromTicketDto(List<TicketDto> allTickets) {
-        return allTickets.stream()
+    static List<Ticket> mapFromTicketDto(List<TicketDto> allTicketsByDate) {
+        return allTicketsByDate.stream()
                 .map(ticketDto -> Ticket.builder()
+                        .drawDate(ticketDto.drawDate())
                         .hash(ticketDto.hash())
                         .numbers(ticketDto.numbers())
-                        .drawDate(ticketDto.drawDate())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
     }
+
 }

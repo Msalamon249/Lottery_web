@@ -13,44 +13,47 @@ import lombok.AllArgsConstructor;
 import java.util.List;
 import java.util.Set;
 
+import static com.example.lottery_web.domain.resultchecker.ResultCheckerMapper.mapPlayersToResults;
+
 @AllArgsConstructor
 public class ResultCheckerFacade {
 
- private final WinningNumbersGeneratorFacade winningNumbersGeneratorFacade;
- private final NumberReceiverFacade numberRecieverFacade;
- private final  PlayerRespotiory playerRespotiory;
- private final  WinnersRetriever winnersRetriever;
+    WinningNumbersGeneratorFacade winningNumbersGeneratorFacade;
+    NumberReceiverFacade numberReceiverFacade;
+    PlayerRepository playerRepository;
+    WinnersRetriever winnerGenerator;
 
-    public PlayersDto generateWinners(){
-        List<TicketDto> allTicketsByDate = numberRecieverFacade.retrieveAllTicketsByNextDrawDate();
-        List<Ticket>tickets = ResultCheckerMapper.mapFromTicketDto(allTicketsByDate);
+    public PlayersDto generateResults() {
+        List<TicketDto> allTicketsByDate = numberReceiverFacade.retrieveAllTicketsByNextDrawDate();
+        List<Ticket> tickets = ResultCheckerMapper.mapFromTicketDto(allTicketsByDate);
         WinningNumbersDto winningNumbersDto = winningNumbersGeneratorFacade.generateWinningNumbers();
         Set<Integer> winningNumbers = winningNumbersDto.getWinningNumbers();
-        if(winningNumbers == null || winningNumbers.isEmpty()){
+        if (winningNumbers == null || winningNumbers.isEmpty()) {
             return PlayersDto.builder()
                     .message("Winners failed to retrieve")
                     .build();
         }
-        List<Player> players = winnersRetriever.retrieveWinners(tickets, winningNumbers);
-        playerRespotiory.saveAll(players);
+        List<Player> players = winnerGenerator.retrieveWinners(tickets, winningNumbers);
+        playerRepository.saveAll(players);
         return PlayersDto.builder()
-                .results(ResultCheckerMapper.mapPlayersToResults(players))
+                .results(mapPlayersToResults(players))
                 .message("Winners succeeded to retrieve")
                 .build();
     }
 
+    public ResultDto findByTicketId(String ticketId) {
+        Player player = playerRepository.findById(ticketId)
+                .orElseThrow(() -> new PlayerResultNotFoundException("Not found for id: " + ticketId));
+        return ResultDto.builder()
+                .hash(ticketId)
+                .numbers(player.numbers())
+                .hitNumbers(player.hitNumbers())
+                .drawDate(player.drawDate())
+                .wonNumbers(player.wonNumbers())
+                .isWinner(player.isWinner())
+                .build();
+    }
 
- public ResultDto findByHash(String hash){
-     Player player = playerRespotiory.findById(hash)
-             .orElseThrow(() -> new RuntimeException("not found"));
- return ResultDto.builder()
-         .hash(hash)
-         .hitNumbers(player.hitNumbers())
-         .isWinner(player.isWinner())
-         .drawDate(player.drawDate())
-         .numbers(player.numbers())
-         .build();
 
 
- }
 }

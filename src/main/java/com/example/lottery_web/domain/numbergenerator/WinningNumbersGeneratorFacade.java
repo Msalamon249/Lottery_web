@@ -2,11 +2,13 @@ package com.example.lottery_web.domain.numbergenerator;
 
 import com.example.lottery_web.domain.numbergenerator.dto.SixRandomNumbersDto;
 import com.example.lottery_web.domain.numbergenerator.dto.WinningNumbersDto;
+import com.example.lottery_web.domain.numbergenerator.exceptions.WinningNumbersNotFoundException;
 import com.example.lottery_web.domain.numberreciever.NumberReceiverFacade;
 
 import lombok.AllArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @AllArgsConstructor
 public class WinningNumbersGeneratorFacade {
@@ -21,13 +23,16 @@ public class WinningNumbersGeneratorFacade {
     public WinningNumbersDto generateWinningNumbers() {
         LocalDateTime nextDrawDate = numberRecieverFacade.retrieveNextDrawDate();
         SixRandomNumbersDto sixRandomNumbersDto = winningNumberGenerator.generateSixRandomNumbers(properties.count(), properties.lowerBand(), properties.upperBand());
-        winningNumberValidator.validate(sixRandomNumbersDto.numbers());
-        winningNumbersRepository.save(WinningNumbers.builder()
+        Set<Integer> winningNumbers = sixRandomNumbersDto.numbers();
+        winningNumberValidator.validate(winningNumbers);
+        WinningNumbers winningNumbersDocument = WinningNumbers.builder()
+                .winningNumbers(winningNumbers)
                 .date(nextDrawDate)
-                .winningNumbers(sixRandomNumbersDto.numbers())
-                .build());
+                .build();
+        WinningNumbers savedNumbers = winningNumbersRepository.save(winningNumbersDocument);
         return WinningNumbersDto.builder()
-                .winningNumbers(sixRandomNumbersDto.numbers())
+                .winningNumbers(savedNumbers.winningNumbers())
+                .date(savedNumbers.date())
                 .build();
     }
 
